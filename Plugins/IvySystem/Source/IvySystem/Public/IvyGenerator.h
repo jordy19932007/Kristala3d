@@ -131,10 +131,10 @@ class IVYSYSTEM_API AIvyGenerator : public AActor
 public:	
     AIvyGenerator();
 
-    UFUNCTION(CallInEditor, BlueprintCallable, Category = "Meshes")
+    UFUNCTION(CallInEditor, BlueprintCallable, Category = "Meshes|Bake")
     void BakeMeshes();
 
-    UFUNCTION(CallInEditor, BlueprintCallable, Category = "Meshes")
+    UFUNCTION(CallInEditor, BlueprintCallable, Category = "Meshes|Bake")
     void CleanBakeMeshes();
 
 protected:

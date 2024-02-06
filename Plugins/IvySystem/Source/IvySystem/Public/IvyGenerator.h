@@ -131,12 +131,6 @@ class IVYSYSTEM_API AIvyGenerator : public AActor
 public:	
     AIvyGenerator();
 
-    UFUNCTION(CallInEditor, BlueprintCallable, Category = "Meshes|Bake")
-    void BakeMeshes();
-
-    UFUNCTION(CallInEditor, BlueprintCallable, Category = "Meshes|Bake")
-    void CleanBakeMeshes();
-
 protected:
     // Seed for the random stream to ensure consistency
     UPROPERTY(EditAnywhere, meta = (ClampMin = 0), Category = "Generation|Random")
@@ -246,6 +240,12 @@ protected:
 
 protected:
     virtual void OnConstruction(const FTransform& Transform) override;
+
+    UFUNCTION(CallInEditor, BlueprintCallable, Category = "Meshes|Bake")
+    void BakeMeshes();
+
+    UFUNCTION(CallInEditor, BlueprintCallable, Category = "Meshes|Bake")
+    void CleanBakeMeshes();
 
 private:
     // The random stream for controlled randomness

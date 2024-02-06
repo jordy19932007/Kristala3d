@@ -4,9 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Materials/MaterialInstance.h"
 #include "IvyGenerator.generated.h"
 
-// Core
+// Ue5 Core
 class USplineComponent;
 class USplineMeshComponent;
 class UStaticMeshComponent;
@@ -47,11 +48,11 @@ struct FInstancingData
     float Probability = 0.8f;
 
     // Min distance between meshes
-    UPROPERTY(EditAnywhere, meta = (ClampMin = 50, ForceUnits = "cm"), Category = "Instancing Data")
+    UPROPERTY(EditAnywhere, meta = (ClampMin = 5, ForceUnits = "cm"), Category = "Instancing Data")
     float MinSpacing = 150.f;
 
     // Max distance between meshes
-    UPROPERTY(EditAnywhere, meta = (ClampMin = 50, ForceUnits = "cm"), Category = "Instancing Data")
+    UPROPERTY(EditAnywhere, meta = (ClampMin = 5, ForceUnits = "cm"), Category = "Instancing Data")
     float MaxSpacing = 175.f;
 
     // Min meshes scaling
@@ -71,6 +72,55 @@ struct FInstancingData
     bool bIncludeBranches = true;
 
     FInstancingData() = default;
+};
+
+USTRUCT()
+struct FMeshesData
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, Category = "Meshes")
+    TArray<UStaticMesh*> Meshes;
+
+    UPROPERTY(EditAnywhere, Category = "Meshes")
+    TArray<UMaterialInstance*> OverrideMaterials;
+
+    FMeshesData() = default;
+
+    bool IsValid() const
+    {
+        for (const UStaticMesh* StaticMesh : Meshes)
+        {
+            if (StaticMesh)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    UStaticMesh* GetRandomStaticMesh(FRandomStream& RandomStream) const
+    {
+        if (!Meshes.IsEmpty())
+        {
+            int32 RandomIndex = RandomStream.RandRange(0, Meshes.Num() - 1);
+            if (UStaticMesh* SelectedMesh = Meshes[RandomIndex])
+            {
+                for (int32 index = 0; index < OverrideMaterials.Num(); index++)
+                {
+                    if (UMaterialInstance* Material = OverrideMaterials[index])
+                    {
+                        SelectedMesh->SetMaterial(index, Material);
+                    }
+                }
+                
+                return SelectedMesh;
+            }
+        }
+
+        return nullptr;
+    }
+
 };
 
 UCLASS()
@@ -101,19 +151,19 @@ protected:
     float NoiseOffset = 0.f;
 
     // Min length of each segment of the tendril
-    UPROPERTY(EditAnywhere, meta = (ClampMin = 10, ForceUnits = "cm"), Category = "Generation|Tendril")
+    UPROPERTY(EditAnywhere, meta = (ClampMin = 5, ForceUnits = "cm"), Category = "Generation|Tendril")
     float MinSegmentLength = 75.f;
 
     // Max length of each segment of the tendril
-    UPROPERTY(EditAnywhere, meta = (ClampMin = 10, ForceUnits = "cm"), Category = "Generation|Tendril")
+    UPROPERTY(EditAnywhere, meta = (ClampMin = 5, ForceUnits = "cm"), Category = "Generation|Tendril")
     float MaxSegmentLength = 150.f;
  
     // Max width offset applied to the tendril points
-    UPROPERTY(EditAnywhere, meta = (ClampMin = 10, ForceUnits = "cm"), Category = "Generation|Tendril")
+    UPROPERTY(EditAnywhere, meta = (ClampMin = 5, ForceUnits = "cm"), Category = "Generation|Tendril")
     float MaxWidth = 50.f;
 
     // Max height offset applied to the tendril points
-    UPROPERTY(EditAnywhere, meta = (ClampMin = 10, ForceUnits = "cm"), Category = "Generation|Tendril")
+    UPROPERTY(EditAnywhere, meta = (ClampMin = 5, ForceUnits = "cm"), Category = "Generation|Tendril")
     float MaxHeight = 35.f;
 
     // Min tendril scaling
@@ -160,20 +210,38 @@ protected:
     UPROPERTY(EditAnywhere, meta = (EditCondition = "bActiveFlowers"), Category = "Generation|Intancing")
     FInstancingData FlowerParameters;
 
-    UPROPERTY(EditAnywhere, Category = "Meshes")
+    UPROPERTY(EditAnywhere, Category = "Meshes|Base")
+    FMeshesData RootTendrilMeshes;
+
+    UPROPERTY(EditAnywhere, Category = "Meshes|Base")
+    FMeshesData StartTendrilMeshes;
+
+    UPROPERTY(EditAnywhere, Category = "Meshes|Base")
+    FMeshesData MidTendrilMeshes;
+
+    UPROPERTY(EditAnywhere, Category = "Meshes|Base")
+    FMeshesData EndTendrilMeshes;
+
+    UPROPERTY(EditAnywhere, Category = "Meshes|Base")
+    FMeshesData LeafMeshes;
+
+    UPROPERTY(EditAnywhere, Category = "Meshes|Base")
+    FMeshesData FlowerMeshes;
+
+    UPROPERTY(EditAnywhere, Category = "Meshes|Bake")
     bool bPreviewMeshes = true;
 
-    UPROPERTY(EditAnywhere, Category = "Meshes")
+    UPROPERTY(EditAnywhere, Category = "Meshes|Bake")
     FString BasePackageName = TEXT("/Game/Meshes/MergedMeshAsset");
 
-    UPROPERTY(EditAnywhere, Category = "Meshes")
+    UPROPERTY(EditAnywhere, Category = "Meshes|Bake")
     UStaticMesh* BakedMesh = nullptr;
 
     // Main spline used for ivys design
-    UPROPERTY(BlueprintReadOnly, Category = "Base")
+    UPROPERTY(BlueprintReadOnly, Category = "Ivy System")
     USplineComponent* MainSplineComp = nullptr;
 
-    UPROPERTY(BlueprintReadOnly, Category = "Base")
+    UPROPERTY(BlueprintReadOnly, Category = "Ivy System")
     UStaticMeshComponent* BakedStaticMeshComp = nullptr;
 
 protected:
@@ -192,24 +260,6 @@ private:
 
     UPROPERTY(Transient)
     TMap<UStaticMesh*, UInstancedStaticMeshComponent*> ISMCMap;
-
-    UPROPERTY(EditDefaultsOnly, Category = "Meshes|Base")
-    TArray<UStaticMesh*> RootTendrilMeshes;
-
-    UPROPERTY(EditDefaultsOnly, Category = "Meshes|Base")
-    TArray<UStaticMesh*> StartTendrilMeshes;
-
-    UPROPERTY(EditDefaultsOnly, Category = "Meshes|Base")
-    TArray<UStaticMesh*> MidTendrilMeshes;
-
-    UPROPERTY(EditDefaultsOnly, Category = "Meshes|Base")
-    TArray<UStaticMesh*> EndTendrilMeshes;
-
-    UPROPERTY(EditDefaultsOnly, Category = "Meshes|Base")
-    TArray<UStaticMesh*> LeafMeshes;
-
-    UPROPERTY(EditDefaultsOnly, Category = "Meshes|Base")
-    TArray<UStaticMesh*> FlowerMeshes;
 
 private:
 
@@ -232,11 +282,9 @@ private:
     void RemoveSplineMeshComponents();
 
     // Static mesh
-    void InstanceMeshesAlongSpline(const TArray<UStaticMesh*>& Meshes, USplineComponent*& Spline, const FInstancingData& InstancingData);
+    void InstanceMeshesAlongSpline(const FMeshesData& MeshesData, USplineComponent*& Spline, const FInstancingData& InstancingData);
     UInstancedStaticMeshComponent* FindOrAddISMC(UStaticMesh* Mesh);
     void RemoveISMC();
-
-    UStaticMesh* GetRandomStaticMesh(const TArray<UStaticMesh*>& MeshArray);
 
 };
 

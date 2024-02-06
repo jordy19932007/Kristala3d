@@ -1,12 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
-
 #include "IvyGenerator.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
+#include "Materials/MaterialInstance.h"
 #include "MeshMergeModule.h"
 #include "IMeshMergeUtilities.h"
 
@@ -63,6 +62,7 @@ void AIvyGenerator::BakeMeshes()
 
     // Configure the mesh merging settings
     FMeshMergingSettings MergeSettings;
+    MergeSettings.bBakeVertexDataToMesh = true;
 
     // Get the mesh merge utilities module
     const IMeshMergeUtilities& MeshMergeUtilities = FModuleManager::Get().LoadModuleChecked<IMeshMergeModule>("MeshMergeUtilities").GetUtilities();
@@ -109,7 +109,9 @@ void AIvyGenerator::OnConstruction(const FTransform& Transform)
 {
     Super::OnConstruction(Transform);
 
+#if WITH_EDITOR
     GenerateIvy();
+#endif
 }
 
 void AIvyGenerator::GenerateIvy()
@@ -287,15 +289,15 @@ void AIvyGenerator::GenerateSplineMeshesFromSpline(USplineComponent*& Spline, bo
         UStaticMesh* SelectedMesh = nullptr;
         if (i == 0 && !bBranch) // First segment
         {
-            SelectedMesh = bShowRoot ? GetRandomStaticMesh(RootTendrilMeshes) : GetRandomStaticMesh(StartTendrilMeshes);
+            SelectedMesh = bShowRoot ? RootTendrilMeshes.GetRandomStaticMesh(RandomStream) : StartTendrilMeshes.GetRandomStaticMesh(RandomStream);
         }
         else if (i == Spline->GetNumberOfSplinePoints() - 2) // Last segment
         {
-            SelectedMesh = GetRandomStaticMesh(EndTendrilMeshes);
+            SelectedMesh = EndTendrilMeshes.GetRandomStaticMesh(RandomStream);
         }
         else // Middle segment
         {
-            SelectedMesh = GetRandomStaticMesh(MidTendrilMeshes);
+            SelectedMesh = MidTendrilMeshes.GetRandomStaticMesh(RandomStream);
         }
 
         if (!SelectedMesh) continue;
@@ -330,9 +332,9 @@ void AIvyGenerator::RemoveSplineMeshComponents()
     SplineMeshComponents.Empty();
 }
 
-void AIvyGenerator::InstanceMeshesAlongSpline(const TArray<UStaticMesh*>& Meshes, USplineComponent*& Spline, const FInstancingData& InstancingData)
+void AIvyGenerator::InstanceMeshesAlongSpline(const FMeshesData& MeshesData, USplineComponent*& Spline, const FInstancingData& InstancingData)
 {
-    if (!Spline || Spline->GetNumberOfSplinePoints() < 2 || Meshes.IsEmpty()) return;
+    if (!Spline || Spline->GetNumberOfSplinePoints() < 2 || !MeshesData.IsValid()) return;
 
     const float SplineLength = Spline->GetSplineLength();
     float CurrentDistance = 0.0f;
@@ -344,7 +346,7 @@ void AIvyGenerator::InstanceMeshesAlongSpline(const TArray<UStaticMesh*>& Meshes
             CurrentDistance += RandomStream.FRandRange(InstancingData.MinSpacing, InstancingData.MaxSpacing);
             continue;
         }
-        UStaticMesh* SelectedMesh = GetRandomStaticMesh(Meshes);
+        UStaticMesh* SelectedMesh = MeshesData.GetRandomStaticMesh(RandomStream);
         if (!SelectedMesh) continue;
 
         UInstancedStaticMeshComponent* ISMC = FindOrAddISMC(SelectedMesh);
@@ -398,18 +400,4 @@ void AIvyGenerator::RemoveISMC()
     }
 
     ISMCMap.Empty();
-}
-
-UStaticMesh* AIvyGenerator::GetRandomStaticMesh(const TArray<UStaticMesh*>& MeshArray)
-{
-    if (!MeshArray.IsEmpty())
-    {
-        int32 RandomIndex = RandomStream.RandRange(0, MeshArray.Num() - 1);    
-        if (UStaticMesh* SelectedMesh = MeshArray[RandomIndex])
-        {
-            return SelectedMesh;
-        }
-    }
-
-    return nullptr; 
 }

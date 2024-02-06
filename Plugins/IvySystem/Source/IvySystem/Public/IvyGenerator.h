@@ -79,10 +79,10 @@ struct FMeshesData
 {
     GENERATED_BODY()
 
-    UPROPERTY(EditAnywhere, Category = "Meshes")
+    UPROPERTY(EditAnywhere, Category = "Meshes Data")
     TArray<UStaticMesh*> Meshes;
 
-    UPROPERTY(EditAnywhere, Category = "Meshes")
+    UPROPERTY(EditAnywhere, Category = "Meshes Data")
     TArray<UMaterialInstance*> OverrideMaterials;
 
     FMeshesData() = default;
@@ -204,48 +204,56 @@ protected:
     UPROPERTY(EditAnywhere, meta = (EditCondition = "bActiveFlowers"), Category = "Generation|Intancing")
     FInstancingData FlowerParameters;
 
-    UPROPERTY(EditAnywhere, Category = "Meshes|Base")
+    UPROPERTY(EditAnywhere, Category = "Meshes|Data")
     FMeshesData RootTendrilMeshes;
 
-    UPROPERTY(EditAnywhere, Category = "Meshes|Base")
+    UPROPERTY(EditAnywhere, Category = "Meshes|Data")
     FMeshesData StartTendrilMeshes;
 
-    UPROPERTY(EditAnywhere, Category = "Meshes|Base")
+    UPROPERTY(EditAnywhere, Category = "Meshes|Data")
     FMeshesData MidTendrilMeshes;
 
-    UPROPERTY(EditAnywhere, Category = "Meshes|Base")
+    UPROPERTY(EditAnywhere, Category = "Meshes|Data")
     FMeshesData EndTendrilMeshes;
 
-    UPROPERTY(EditAnywhere, Category = "Meshes|Base")
+    UPROPERTY(EditAnywhere, Category = "Meshes|Data")
     FMeshesData LeafMeshes;
 
-    UPROPERTY(EditAnywhere, Category = "Meshes|Base")
+    UPROPERTY(EditAnywhere, Category = "Meshes|Data")
     FMeshesData FlowerMeshes;
 
-    UPROPERTY(EditAnywhere, Category = "Meshes|Bake")
+    UPROPERTY(EditAnywhere, Category = "Meshes|Baking")
     bool bPreviewMeshes = true;
 
-    UPROPERTY(EditAnywhere, Category = "Meshes|Bake")
-    FString BasePackageName = TEXT("/Game/Meshes/MergedMeshAsset");
+    UPROPERTY(EditAnywhere, Category = "Meshes|Baking")
+    FString DirectoryPath = TEXT("/Game/Meshes");
 
-    UPROPERTY(EditAnywhere, Category = "Meshes|Bake")
+    UPROPERTY(EditAnywhere, Category = "Meshes|Baking")
+    FString BasePackageName = TEXT("MergedMesh");
+
+    UPROPERTY(EditAnywhere, DuplicateTransient, Category = "Meshes|Baking")
     UStaticMesh* BakedMesh = nullptr;
+
+    UPROPERTY(BlueprintReadOnly, DuplicateTransient, Category = "Ivy System")
+    UStaticMeshComponent* BakedStaticMeshComp = nullptr;
 
     // Main spline used for ivys design
     UPROPERTY(BlueprintReadOnly, Category = "Ivy System")
     USplineComponent* MainSplineComp = nullptr;
 
-    UPROPERTY(BlueprintReadOnly, Category = "Ivy System")
-    UStaticMeshComponent* BakedStaticMeshComp = nullptr;
-
 protected:
     virtual void OnConstruction(const FTransform& Transform) override;
 
-    UFUNCTION(CallInEditor, BlueprintCallable, Category = "Meshes|Bake")
+#if WITH_EDITOR
+    UFUNCTION(CallInEditor, Category = "Meshes|Baking")
+    void GenerateVariation();
+
+    UFUNCTION(CallInEditor, Category = "Meshes|Baking")
     void BakeMeshes();
 
-    UFUNCTION(CallInEditor, BlueprintCallable, Category = "Meshes|Bake")
+    UFUNCTION(CallInEditor, Category = "Meshes|Baking")
     void CleanBakeMeshes();
+#endif // WITH_EDITOR
 
 private:
     // The random stream for controlled randomness

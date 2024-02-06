@@ -28,10 +28,9 @@ AIvyGenerator::AIvyGenerator()
     BakedStaticMeshComp->SetupAttachment(RootSceneComponent);
 }
 
+#if WITH_EDITOR
 void AIvyGenerator::BakeMeshes()
 {
-#if WITH_EDITOR
-
     if (SplineMeshComponents.IsEmpty() && ISMCMap.IsEmpty())
     {
         UE_LOG(LogTemp, Warning, TEXT("No components to merge."));
@@ -71,7 +70,7 @@ void AIvyGenerator::BakeMeshes()
     TArray<UObject*> AssetsToSync;
     FVector TempLocation = GetActorLocation();
     float ScreenSize = 100.f;
-    FString UniqueBasePackageName = BasePackageName + TEXT("_") + GetName();
+    FString UniqueBasePackageName = DirectoryPath + TEXT("/") + BasePackageName + TEXT("_") + GetName();
     
     // Merge the components into a new static mesh
     MeshMergeUtilities.MergeComponentsToStaticMesh(ComponentsToMerge, this->GetWorld(), MergeSettings, nullptr, nullptr, UniqueBasePackageName, AssetsToSync, TempLocation, ScreenSize, true);
@@ -81,13 +80,10 @@ void AIvyGenerator::BakeMeshes()
         BakedMesh = Cast<UStaticMesh>(AssetsToSync[0]);
         GenerateIvy();
     }
-
-#endif // WITH_EDITOR
 }
 
 void AIvyGenerator::CleanBakeMeshes()
 {
-#if WITH_EDITOR
     if (BakedStaticMeshComp)
     {
         BakedStaticMeshComp->SetStaticMesh(nullptr);
@@ -102,8 +98,16 @@ void AIvyGenerator::CleanBakeMeshes()
     }
 
     GenerateIvy();
-#endif // WITH_EDITOR
 }
+
+void AIvyGenerator::GenerateVariation()
+{
+    RandomSeed = FMath::RandRange(0, 9999);
+    Modify();    
+
+    CleanBakeMeshes();
+}
+#endif // WITH_EDITOR
 
 void AIvyGenerator::OnConstruction(const FTransform& Transform)
 {

@@ -62,6 +62,7 @@ void AIvyGenerator::BakeMeshes()
     // Configure the mesh merging settings
     FMeshMergingSettings MergeSettings;
     MergeSettings.bBakeVertexDataToMesh = true;
+    //MergeSettings.bGenerateNaniteEnabledMesh = true;
 
     // Get the mesh merge utilities module
     const IMeshMergeUtilities& MeshMergeUtilities = FModuleManager::Get().LoadModuleChecked<IMeshMergeModule>("MeshMergeUtilities").GetUtilities();

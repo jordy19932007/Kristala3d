@@ -49,11 +49,11 @@ struct FInstancingData
 
     // Min distance between meshes
     UPROPERTY(EditAnywhere, meta = (ClampMin = 5, ForceUnits = "cm"), Category = "Instancing Data")
-    float MinSpacing = 150.f;
+    float MinSpacing = 50.f;
 
     // Max distance between meshes
     UPROPERTY(EditAnywhere, meta = (ClampMin = 5, ForceUnits = "cm"), Category = "Instancing Data")
-    float MaxSpacing = 175.f;
+    float MaxSpacing = 75.f;
 
     // Min meshes scaling
     UPROPERTY(EditAnywhere, meta = (ClampMin = 0.1, ClampMax = 10), Category = "Instancing Data")
@@ -166,7 +166,7 @@ protected:
 
     // Use root at the beginning
     UPROPERTY(EditAnywhere, Category = "Generation|Tendril")
-    bool bShowRoot = true;
+    bool bShowRoot = false;
 
     // Frequency at which branches will be attempted to be generated
     UPROPERTY(EditAnywhere, meta = (ClampMin = 1), Category = "Generation|Branching")
@@ -204,7 +204,7 @@ protected:
     UPROPERTY(EditAnywhere, meta = (EditCondition = "bActiveFlowers"), Category = "Generation|Intancing")
     FInstancingData FlowerParameters;
 
-    UPROPERTY(EditAnywhere, Category = "Meshes|Data")
+    UPROPERTY(EditAnywhere, meta = (DisplayPriority = -1), Category = "Meshes|Data")
     FMeshesData RootTendrilMeshes;
 
     UPROPERTY(EditAnywhere, Category = "Meshes|Data")
@@ -245,13 +245,13 @@ protected:
     virtual void OnConstruction(const FTransform& Transform) override;
 
 #if WITH_EDITOR
-    UFUNCTION(CallInEditor, Category = "Meshes|Baking")
+    UFUNCTION(CallInEditor, Category = "Meshes")
     void GenerateVariation();
 
-    UFUNCTION(CallInEditor, Category = "Meshes|Baking")
+    UFUNCTION(CallInEditor, Category = "Meshes")
     void BakeMeshes();
 
-    UFUNCTION(CallInEditor, Category = "Meshes|Baking")
+    UFUNCTION(CallInEditor, Category = "Meshes")
     void CleanBakeMeshes();
 #endif // WITH_EDITOR
 
@@ -260,13 +260,13 @@ private:
     UPROPERTY()
     FRandomStream RandomStream;
 
-    UPROPERTY(Transient)
+    UPROPERTY()
     TArray<USplineComponent*> SplineComponents;
 
-    UPROPERTY(Transient)
+    UPROPERTY()
     TArray<USplineMeshComponent*> SplineMeshComponents;
 
-    UPROPERTY(Transient)
+    UPROPERTY()
     TMap<UStaticMesh*, UInstancedStaticMeshComponent*> ISMCMap;
 
 private:

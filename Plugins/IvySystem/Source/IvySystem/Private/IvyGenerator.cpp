@@ -213,11 +213,10 @@ void AIvyGenerator::GenerateBranchesFromTendril(const FTendrilData& Tendril)
 void AIvyGenerator::GenerateSplineFromTendril(const FTendrilData& Tendril, const FLinearColor& Color)
 {
     FName UniqueName = MakeUniqueObjectName(this, USplineComponent::StaticClass(), "Spline");
-    USplineComponent* SplineComponent = NewObject<USplineComponent>(this, USplineComponent::StaticClass(), UniqueName, RF_Transient);
+    USplineComponent* SplineComponent = NewObject<USplineComponent>(this, USplineComponent::StaticClass(), UniqueName, RF_DuplicateTransient);
     SplineComponent->ClearSplinePoints();
     SplineComponent->EditorSelectedSplineSegmentColor = Color;
     SplineComponent->EditorUnselectedSplineSegmentColor = Color;
-    //SplineComponent->bEditableWhenInherited = false;
     SplineComponent->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
     SplineComponent->RegisterComponent();
     SplineComponents.Add(SplineComponent);
@@ -237,11 +236,14 @@ void AIvyGenerator::GenerateSplineFromTendril(const FTendrilData& Tendril, const
 
 void AIvyGenerator::RemoveSplineComponents()
 {
-    for (auto* Spline : SplineComponents)
+    TArray<UActorComponent*> ActorComps;
+    GetComponents(USplineComponent::StaticClass(), ActorComps);
+    for (auto* ActorComp : ActorComps)
     {
-        if (Spline)
+        USplineComponent* SplineComponent = Cast<USplineComponent>(ActorComp);
+        if (SplineComponent && SplineComponent != MainSplineComp)
         {
-            Spline->DestroyComponent();
+            SplineComponent->DestroyComponent();
         }
     }
 
@@ -325,11 +327,13 @@ void AIvyGenerator::GenerateSplineMeshesFromSpline(USplineComponent*& Spline, bo
 
 void AIvyGenerator::RemoveSplineMeshComponents()
 {
-    for (auto* Spline : SplineMeshComponents)
+    TArray<UActorComponent*> ActorComps;
+    GetComponents(USplineMeshComponent::StaticClass(), ActorComps);
+    for (auto* ActorComp : ActorComps)
     {
-        if (Spline)
+        if (USplineMeshComponent* SplineMeshComp = Cast<USplineMeshComponent>(ActorComp))
         {
-            Spline->DestroyComponent();
+            SplineMeshComp->DestroyComponent();
         }
     }
 
@@ -394,11 +398,12 @@ UInstancedStaticMeshComponent* AIvyGenerator::FindOrAddISMC(UStaticMesh* Mesh)
 
 void AIvyGenerator::RemoveISMC()
 {
-    for (auto ISMCPair : ISMCMap)
+    TArray<UActorComponent*> ActorComps;
+    GetComponents(UInstancedStaticMeshComponent::StaticClass(), ActorComps);
+    for (auto* ActorComp : ActorComps)
     {
-        if (UInstancedStaticMeshComponent* ISMC = ISMCPair.Value)
+        if (UInstancedStaticMeshComponent* ISMC = Cast<UInstancedStaticMeshComponent>(ActorComp))
         {
-            ISMC->ClearInstances();
             ISMC->DestroyComponent();
         }
     }

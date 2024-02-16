@@ -82,9 +82,6 @@ struct FMeshesData
     UPROPERTY(EditAnywhere, Category = "Meshes Data")
     TArray<UStaticMesh*> Meshes;
 
-    UPROPERTY(EditAnywhere, Category = "Meshes Data")
-    TArray<UMaterialInstance*> OverrideMaterials;
-
     FMeshesData() = default;
 
     bool IsValid() const
@@ -105,22 +102,13 @@ struct FMeshesData
         {
             int32 RandomIndex = RandomStream.RandRange(0, Meshes.Num() - 1);
             if (UStaticMesh* SelectedMesh = Meshes[RandomIndex])
-            {
-                for (int32 index = 0; index < OverrideMaterials.Num(); index++)
-                {
-                    if (UMaterialInstance* Material = OverrideMaterials[index])
-                    {
-                        SelectedMesh->SetMaterial(index, Material);
-                    }
-                }
-                
+            {               
                 return SelectedMesh;
             }
         }
 
         return nullptr;
     }
-
 };
 
 UCLASS()
@@ -204,23 +192,34 @@ protected:
     UPROPERTY(EditAnywhere, meta = (EditCondition = "bActiveFlowers"), Category = "Generation|Intancing")
     FInstancingData FlowerParameters;
 
-    UPROPERTY(EditAnywhere, meta = (DisplayPriority = -1), Category = "Meshes|Data")
+    // Default only
+    UPROPERTY(EditDefaultsOnly, meta = (DisplayPriority = -1), Category = "Meshes|Data")
     FMeshesData RootTendrilMeshes;
 
-    UPROPERTY(EditAnywhere, Category = "Meshes|Data")
+    UPROPERTY(EditDefaultsOnly, Category = "Meshes|Data")
     FMeshesData StartTendrilMeshes;
 
-    UPROPERTY(EditAnywhere, Category = "Meshes|Data")
+    UPROPERTY(EditDefaultsOnly, Category = "Meshes|Data")
     FMeshesData MidTendrilMeshes;
 
-    UPROPERTY(EditAnywhere, Category = "Meshes|Data")
+    UPROPERTY(EditDefaultsOnly, Category = "Meshes|Data")
     FMeshesData EndTendrilMeshes;
 
-    UPROPERTY(EditAnywhere, Category = "Meshes|Data")
+    UPROPERTY(EditDefaultsOnly, Category = "Meshes|Data")
     FMeshesData LeafMeshes;
 
-    UPROPERTY(EditAnywhere, Category = "Meshes|Data")
+    UPROPERTY(EditDefaultsOnly, Category = "Meshes|Data")
     FMeshesData FlowerMeshes;
+
+    // Mesh Data
+    UPROPERTY(EditAnywhere, Category = "Meshes|Data")
+    TArray<UMaterialInstance*> TendrilOverrideMaterials;
+
+    UPROPERTY(EditAnywhere, Category = "Meshes|Data")
+    TArray<UMaterialInstance*> LeafOverrideMaterials;
+
+    UPROPERTY(EditAnywhere, Category = "Meshes|Data")
+    TArray<UMaterialInstance*> FlowerOverrideMaterials;
 
     UPROPERTY(EditAnywhere, Category = "Meshes|Baking")
     bool bPreviewMeshes = true;
@@ -290,8 +289,8 @@ private:
     void RemoveSplineMeshComponents();
 
     // Static mesh
-    void InstanceMeshesAlongSpline(const FMeshesData& MeshesData, USplineComponent*& Spline, const FInstancingData& InstancingData);
-    UInstancedStaticMeshComponent* FindOrAddISMC(UStaticMesh* Mesh);
+    void InstanceMeshesAlongSpline(const FMeshesData& MeshesData, const TArray<UMaterialInstance*>& OverrideMaterials, USplineComponent*& Spline, const FInstancingData& InstancingData);
+    UInstancedStaticMeshComponent* FindOrAddISMC(UStaticMesh* Mesh, const TArray<UMaterialInstance*>& OverrideMaterials);
     void RemoveISMC();
 
 };

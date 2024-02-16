@@ -62,7 +62,12 @@ void AIvyGenerator::BakeMeshes()
     // Configure the mesh merging settings
     FMeshMergingSettings MergeSettings;
     MergeSettings.bBakeVertexDataToMesh = true;
-    //MergeSettings.bGenerateNaniteEnabledMesh = true;
+
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION == 0
+    MergeSettings.bGenerateNaniteEnabledMesh = true;
+#else
+    MergeSettings.NaniteSettings.bEnabled = true;
+#endif
 
     // Get the mesh merge utilities module
     const IMeshMergeUtilities& MeshMergeUtilities = FModuleManager::Get().LoadModuleChecked<IMeshMergeModule>("MeshMergeUtilities").GetUtilities();
@@ -263,7 +268,7 @@ void AIvyGenerator::GenerateMeshes()
         {   
             if (!bBrach || LeafParameters.bIncludeBranches)
             {
-                InstanceMeshesAlongSpline(LeafMeshes, Spline, LeafParameters);
+                InstanceMeshesAlongSpline(LeafMeshes, LeafOverrideMaterials, Spline, LeafParameters);
             }
         }
 
@@ -271,7 +276,7 @@ void AIvyGenerator::GenerateMeshes()
         {
             if (!bBrach || FlowerParameters.bIncludeBranches)
             {
-                InstanceMeshesAlongSpline(FlowerMeshes, Spline, FlowerParameters);
+                InstanceMeshesAlongSpline(FlowerMeshes, FlowerOverrideMaterials, Spline, FlowerParameters);
             }
         }
 
@@ -310,6 +315,13 @@ void AIvyGenerator::GenerateSplineMeshesFromSpline(USplineComponent*& Spline, bo
         if (!SelectedMesh) continue;
 
         SplineMeshComponent->SetStaticMesh(SelectedMesh);
+        for (int32 index = 0; index < TendrilOverrideMaterials.Num(); index++)
+        {
+            if (UMaterialInstance* Material = TendrilOverrideMaterials[index])
+            {
+                SplineMeshComponent->SetMaterial(index, Material);
+            }
+        }
 
         // Set the start and end points of the spline mesh
         const FVector StartPoint = Spline->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::Local);
@@ -341,7 +353,7 @@ void AIvyGenerator::RemoveSplineMeshComponents()
     SplineMeshComponents.Empty();
 }
 
-void AIvyGenerator::InstanceMeshesAlongSpline(const FMeshesData& MeshesData, USplineComponent*& Spline, const FInstancingData& InstancingData)
+void AIvyGenerator::InstanceMeshesAlongSpline(const FMeshesData& MeshesData, const TArray<UMaterialInstance*>& OverrideMaterials, USplineComponent*& Spline, const FInstancingData& InstancingData)
 {
     if (!Spline || Spline->GetNumberOfSplinePoints() < 2 || !MeshesData.IsValid()) return;
 
@@ -358,7 +370,7 @@ void AIvyGenerator::InstanceMeshesAlongSpline(const FMeshesData& MeshesData, USp
         UStaticMesh* SelectedMesh = MeshesData.GetRandomStaticMesh(RandomStream);
         if (!SelectedMesh) continue;
 
-        UInstancedStaticMeshComponent* ISMC = FindOrAddISMC(SelectedMesh);
+        UInstancedStaticMeshComponent* ISMC = FindOrAddISMC(SelectedMesh, OverrideMaterials);
         if (!ISMC)continue;
 
         const FVector Location = Spline->GetLocationAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World);
@@ -380,7 +392,7 @@ void AIvyGenerator::InstanceMeshesAlongSpline(const FMeshesData& MeshesData, USp
     }
 }
 
-UInstancedStaticMeshComponent* AIvyGenerator::FindOrAddISMC(UStaticMesh* Mesh)
+UInstancedStaticMeshComponent* AIvyGenerator::FindOrAddISMC(UStaticMesh* Mesh, const TArray<UMaterialInstance*>& OverrideMaterials)
 {
     if (!Mesh) return nullptr;
 
@@ -392,6 +404,13 @@ UInstancedStaticMeshComponent* AIvyGenerator::FindOrAddISMC(UStaticMesh* Mesh)
         FoundISMC->SetStaticMesh(Mesh);
         FoundISMC->RegisterComponent();
         FoundISMC->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
+        for (int32 index = 0; index < OverrideMaterials.Num(); index++)
+        {
+            if (UMaterialInstance* Material = OverrideMaterials[index])
+            {
+                FoundISMC->SetMaterial(index, Material);
+            }
+        }
     }
 
     return FoundISMC;

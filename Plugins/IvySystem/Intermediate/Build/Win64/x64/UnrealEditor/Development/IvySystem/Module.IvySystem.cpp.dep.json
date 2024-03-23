@@ -1,0 +1,39 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "f:\\project\\kristala3d\\plugins\\ivysystem\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\ivysystem\\module.ivysystem.cpp",
+        "ProvidedModule": "",
+        "PCH": "f:\\project\\kristala3d\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\engine\\sharedpch.engine.cpp20.h.pch",
+        "Includes": [
+            "f:\\project\\kristala3d\\plugins\\ivysystem\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\ivysystem\\definitions.ivysystem.h",
+            "f:\\project\\kristala3d\\plugins\\ivysystem\\intermediate\\build\\win64\\unrealeditor\\inc\\ivysystem\\uht\\ivygenerator.gen.cpp",
+            "f:\\project\\kristala3d\\plugins\\ivysystem\\source\\ivysystem\\public\\ivygenerator.h",
+            "f:\\project\\kristala3d\\plugins\\ivysystem\\intermediate\\build\\win64\\unrealeditor\\inc\\ivysystem\\uht\\ivygenerator.generated.h",
+            "f:\\project\\kristala3d\\plugins\\ivysystem\\intermediate\\build\\win64\\unrealeditor\\inc\\ivysystem\\uht\\ivysystem.init.gen.cpp",
+            "f:\\project\\kristala3d\\plugins\\ivysystem\\source\\ivysystem\\private\\ivygenerator.cpp",
+            "f:\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\components\\splinecomponent.h",
+            "f:\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\splinecomponent.generated.h",
+            "f:\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\components\\splinemeshcomponent.h",
+            "f:\\ue_5.3\\engine\\shaders\\shared\\splinemeshshaderparams.h",
+            "f:\\ue_5.3\\engine\\shaders\\shared\\hlsltypealiases.h",
+            "f:\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\splinemeshcomponent.generated.h",
+            "f:\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\components\\instancedstaticmeshcomponent.h",
+            "f:\\ue_5.3\\engine\\source\\runtime\\engine\\public\\elements\\sminstance\\sminstancemanager.h",
+            "f:\\ue_5.3\\engine\\source\\runtime\\engine\\public\\elements\\sminstance\\sminstanceelementid.h",
+            "f:\\ue_5.3\\engine\\source\\runtime\\engine\\public\\instancedstaticmeshdelegates.h",
+            "f:\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\sminstanceelementid.generated.h",
+            "f:\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\sminstancemanager.generated.h",
+            "f:\\ue_5.3\\engine\\source\\runtime\\engine\\public\\primitiveinstanceupdatecommand.h",
+            "f:\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\instancedstaticmeshcomponent.generated.h",
+            "f:\\ue_5.3\\engine\\source\\developer\\meshmergeutilities\\public\\meshmergemodule.h",
+            "f:\\ue_5.3\\engine\\source\\developer\\meshmergeutilities\\public\\imeshmergeutilities.h",
+            "f:\\ue_5.3\\engine\\source\\developer\\meshreductioninterface\\public\\imeshreductioninterfaces.h",
+            "f:\\ue_5.3\\engine\\plugins\\editor\\editorscriptingutilities\\source\\editorscriptingutilities\\public\\editorassetlibrary.h",
+            "f:\\ue_5.3\\engine\\plugins\\editor\\editorscriptingutilities\\intermediate\\build\\win64\\unrealeditor\\inc\\editorscriptingutilities\\uht\\editorassetlibrary.generated.h",
+            "f:\\project\\kristala3d\\plugins\\ivysystem\\source\\ivysystem\\private\\ivysystem.cpp",
+            "f:\\project\\kristala3d\\plugins\\ivysystem\\source\\ivysystem\\public\\ivysystem.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

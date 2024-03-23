@@ -1,0 +1,11 @@
+{
+	"RemapUnityFiles": 
+	{
+		"Module.IvySystem.cpp.obj": [
+			"IvyGenerator.gen.cpp.obj",
+			"IvySystem.init.gen.cpp.obj",
+			"IvyGenerator.cpp.obj",
+			"IvySystem.cpp.obj"
+		]
+	}
+}

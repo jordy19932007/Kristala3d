@@ -103,3 +103,7 @@ Content/Kristala/Meshes/UpperLower_Parts/SM_Streetmarket_Assets_UpperPart_09.uas
 Content/Kristala/Textures/Streetmarket/Flags/T_FlagsToppers_Masks.uasset
 Content/Kristala/Textures/Streetmarket/Flags/T_FlagsToppers_Masks2.uasset
 Content/Map/StoneGate.umap
+Content/Kristala/MasterMaterials/ExteriorProps/NewMaterial.uasset
+Content/Kristala/MasterMaterials/ExteriorProps/NewMaterial1.uasset
+Content/Kristala/Meshes/ExteriorProps/carriage_test.uasset
+Content/Meshes/MergedMesh_BP_IvyGenerator_C_1.uasset

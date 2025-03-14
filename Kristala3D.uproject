@@ -22,11 +22,6 @@
 		{
 			"Name": "HDRIBackdrop",
 			"Enabled": true
-		},
-		{
-			"Name": "RenameTool",
-			"Enabled": true,
-			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/c6e227383f754209ab1eeb294aa0f6d6"
 		}
 	]
 }
